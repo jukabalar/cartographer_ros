@@ -85,7 +85,8 @@ class SensorBridge {
   void HandleRangefinder(const std::string& sensor_id,
                          ::cartographer::common::Time time,
                          const std::string& frame_id,
-                         const ::cartographer::sensor::TimedPointCloud& ranges);
+                         const ::cartographer::sensor::TimedPointCloud& ranges, 
+                         const std::vector<float>& intensities = {});
 
   const int num_subdivisions_per_laser_scan_;
   const bool ignore_out_of_order_messages_;

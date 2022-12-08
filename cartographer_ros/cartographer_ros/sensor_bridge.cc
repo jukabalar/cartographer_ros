@@ -205,7 +205,7 @@ void SensorBridge::HandlePointCloud2Message(
   carto::sensor::PointCloudWithIntensities point_cloud;
   carto::common::Time time;
   std::tie(point_cloud, time) = ToPointCloudWithIntensities(*msg);
-  HandleRangefinder(sensor_id, time, msg->header.frame_id, point_cloud.points);
+  HandleRangefinder(sensor_id, time, msg->header.frame_id, point_cloud.points, point_cloud.intensities);
 }
 
 const TfBridge& SensorBridge::tf_bridge() const { return tf_bridge_; }
@@ -254,7 +254,8 @@ void SensorBridge::HandleLaserScan(
 
 void SensorBridge::HandleRangefinder(
     const std::string& sensor_id, const carto::common::Time time,
-    const std::string& frame_id, const carto::sensor::TimedPointCloud& ranges) {
+    const std::string& frame_id, const carto::sensor::TimedPointCloud& ranges, 
+    const std::vector<float>& intensities){
   if (!ranges.empty()) {
     CHECK_LE(ranges.back().time, 0.f);
   }
@@ -273,7 +274,7 @@ void SensorBridge::HandleRangefinder(
         sensor_id, carto::sensor::TimedPointCloudData{
                        time, sensor_to_tracking->translation().cast<float>(),
                        carto::sensor::TransformTimedPointCloud(
-                           ranges, sensor_to_tracking->cast<float>())});
+                           ranges, sensor_to_tracking->cast<float>()), intensities});
   }
 }
 
