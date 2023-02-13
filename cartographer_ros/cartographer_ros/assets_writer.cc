@@ -210,7 +210,7 @@ void AssetsWriter::Run(const std::string& configuration_directory,
       // We publish tf messages one second earlier than other messages. Under
       // the assumption of higher frequency tf this should ensure that tf can
       // always interpolate.
-      const ::ros::Duration kDelay(1.);
+      const ::ros::Duration kDelay(0.);
       for (const rosbag::MessageInstance& message : view) {
         if (use_bag_transforms && message.isType<tf2_msgs::TFMessage>()) {
           auto tf_message = message.instantiate<tf2_msgs::TFMessage>();

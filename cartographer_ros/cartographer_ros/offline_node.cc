@@ -85,7 +85,7 @@ constexpr int kSingleThreaded = 1;
 // We publish tf messages one second earlier than other messages. Under
 // the assumption of higher frequency tf this should ensure that tf can
 // always interpolate.
-const ::ros::Duration kDelay = ::ros::Duration(1.0);
+const ::ros::Duration kDelay = ::ros::Duration(0.0);
 
 void RunOfflineNode(const MapBuilderFactory& map_builder_factory) {
   CHECK(!FLAGS_configuration_directory.empty())
@@ -291,6 +291,7 @@ void RunOfflineNode(const MapBuilderFactory& map_builder_factory) {
     int trajectory_id;
     // Lazily add trajectories only when the first message arrives in order
     // to avoid blocking the sensor queue.
+
     if (bag_index_to_trajectory_id.count(bag_index) == 0) {
       trajectory_id =
           node.AddOfflineTrajectory(bag_expected_sensor_ids.at(bag_index),
