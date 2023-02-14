@@ -57,7 +57,9 @@ std::tuple<ros::Time, ros::Time> PlayableBag::GetBeginEndTime() const {
 
 rosbag::MessageInstance PlayableBag::GetNextMessage(
     cartographer_ros_msgs::BagfileProgress* progress) {
-  CHECK(IsMessageAvailable());
+  CHECK(buffered_messages_.empty() &&
+         (buffered_messages_.front().getTime() <
+          buffered_messages_.back().getTime()));
   const rosbag::MessageInstance msg = buffered_messages_.front();
   buffered_messages_.pop_front();
   AdvanceUntilMessageAvailable();
@@ -90,7 +92,9 @@ int PlayableBag::bag_id() const { return bag_id_; }
 void PlayableBag::AdvanceOneMessage() {
   CHECK(!finished_);
   if (view_iterator_ == view_->end()) {
-    finished_ = true;
+    if (buffered_messages_.empty()) {
+      finished_ = true;
+    }
     return;
   }
   rosbag::MessageInstance& msg = *view_iterator_;
@@ -108,6 +112,9 @@ void PlayableBag::AdvanceUntilMessageAvailable() {
   }
   do {
     AdvanceOneMessage();
+    if (view_iterator_ == view_->end()) {
+      return;
+    }
   } while (!finished_ && !IsMessageAvailable());
 }
 
